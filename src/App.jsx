@@ -1,35 +1,73 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useEffect, useState } from 'react';
 
-function App() {
-  const [count, setCount] = useState(0)
+export const App = () => {
+  const [location, setLocation] = useState("")
+  const [results, setResults] = useState([])
+  const [weather, setWeather] = useState("")
+
+
+
+  const onChangeLocation = (event) => {
+    setLocation(event.target.value)
+  }
+
+  const onClickSearchLocation = async () => {
+    try {
+      const APIKEY = '4de25c05c73d9a289d5c2bbb6dc7f4c3'
+      const API_URL_GEO = `http://api.openweathermap.org/geo/1.0/direct?q=${location}&limit=1&appid=${APIKEY}`;
+      const response = await fetch(API_URL_GEO);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      console.log('Data fetched successfully:', data);
+      const { lat, lon, name } = data[0]
+      setResults({ lat, lon, name })
+
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+    }
+  }
+
+
+  useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        const APIKEY = '4de25c05c73d9a289d5c2bbb6dc7f4c3'
+        const API_URL_WEATHER = `https://api.openweathermap.org/data/2.5/weather?lat=${results.lat}&lon=${results.lon}&appid=${APIKEY}&lang=ja`;
+        const response = await fetch(API_URL_WEATHER);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        console.log('Data fetched successfully:', data);
+        setWeather(data.weather[0].description)
+      } catch (error) {
+        console.error('Failed to fetch data:', error);
+      }
+    }
+
+    fetchWeather()
+
+  }, [results])
 
   return (
     <>
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <input type="text" placeholder='都市名を入力' value={location} onChange={onChangeLocation} />
+        <button onClick={onClickSearchLocation}>検索</button>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+      <div>
+        {results.name &&
+          <p>{results.name}の緯度、経度は…</p>
+        }
+        <p>緯度：{results.lat}</p>
+        <p>経度：{results.lon}</p>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+      <div>
+        <p>今の天気は{weather}です</p>
 
-export default App
+      </div>
+    </>
+  );
+};

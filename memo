@@ -1,0 +1,9 @@
+// https://openweathermap.org/api/one-call-3#weather_overview_how
+// https://openweathermap.org/api/one-call-3#multi
+// https://openweathermap.org/api/geocoding-api
+
+// const APIKEY = '4de25c05c73d9a289d5c2bbb6dc7f4c3'
+// const API_URL = `http://api.openweathermap.org/geo/1.0/direct?q=${location}&limit=1&appid=${APIKEY}`;
+
+
+
